@@ -49,8 +49,8 @@ groupshared Real3 f3Array1[THREADS_Y][THREADS_X];
 groupshared Real3 f3Array2[THREADS_Y][THREADS_X];
 
 void WENO3PlusX(Real3 v_im1, Real3 v_i, Real3 v_ip1,
-		Real b_im1, Real b_i, Real b_ip1,
-		out Real3 flux, out Real s2) {
+				Real b_im1, Real b_i, Real b_ip1,
+				out Real3 flux, out Real s2) {
 
 	// find the smoothness indicators
 	Real3 b0 = (v_ip1 - v_i) * (v_ip1 - v_i);
@@ -85,8 +85,8 @@ void WENO3PlusX(Real3 v_im1, Real3 v_i, Real3 v_ip1,
 }
 
 void WENO3MinusX(Real3 v_i, Real3 v_ip1, Real3 v_ip2,
-		 Real b_i, Real b_ip1, Real b_ip2,
-		 out Real3 flux, out Real s2) {
+				 Real b_i, Real b_ip1, Real b_ip2,
+				 out Real3 flux, out Real s2) {
 
 	// find the smoothness indicators
 	Real3 b0 = (v_ip1 - v_i) * (v_ip1 - v_i);
@@ -121,8 +121,8 @@ void WENO3MinusX(Real3 v_i, Real3 v_ip1, Real3 v_ip2,
 }
 
 void WENO3PlusY(Real3 v_im1, Real3 v_i, Real3 v_ip1,
-		Real b_im1, Real b_i, Real b_ip1,
-		out Real3 flux, out Real s2) {
+				Real b_im1, Real b_i, Real b_ip1,
+				out Real3 flux, out Real s2) {
 
 	// find the smoothness indicators
 	Real3 b0 = (v_ip1 - v_i) * (v_ip1 - v_i);
@@ -157,8 +157,8 @@ void WENO3PlusY(Real3 v_im1, Real3 v_i, Real3 v_ip1,
 }
 
 void WENO3MinusY(Real3 v_i, Real3 v_ip1, Real3 v_ip2,
-		 Real b_i, Real b_ip1, Real b_ip2,
-		 out Real3 flux, out Real s2) {
+				 Real b_i, Real b_ip1, Real b_ip2,
+				 out Real3 flux, out Real s2) {
 
 	// find the smoothness indicators
 	Real3 b0 = (v_ip1 - v_i) * (v_ip1 - v_i);
@@ -269,11 +269,11 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// evaluate the Jacobian matrices
 	Real3x3 dfdU = Real3x3(0.0, 1.0, 0.0,
-				-u * u + g * h, 2.0 * u, 0.0,
-				-u * v, v, u);
+							-u * u + g * h, 2.0 * u, 0.0,
+							-u * v, v, u);
 	Real3x3 dgdU = Real3x3(0.0, 0.0, 1.0,
-				-u * v, v, u,
-				-v * v + g * h, 0.0, 2.0 * v);
+							-u * v, v, u,
+							-v * v + g * h, 0.0, 2.0 * v);
 
 	// store flux_f in f3Array1
 	f3Array1[j][i] = flux_f;
@@ -292,15 +292,15 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// find the 2nd order source term
 	Real3 S_low = Real3(0.0,
-			   (1.0 / dx)
-			   * (SRC1(f1Array0[j][i + 1]) - SRC1(f1Array0[j][i - 1]))
-			   - g * (h + b) * (1.0 / (2.0 * dx))
-			   * (SRC2(f1Array0[j][i + 1]) - SRC2(f1Array0[j][i - 1])),
+						  (1.0 / dx)
+						  * (SRC1(f1Array0[j][i + 1]) - SRC1(f1Array0[j][i - 1]))
+						  - g * (h + b) * (1.0 / (2.0 * dx))
+						  * (SRC2(f1Array0[j][i + 1]) - SRC2(f1Array0[j][i - 1])),
 
-			   (1.0 / dy)
-			   * (SRC1(f1Array0[j + 1][i]) - SRC1(f1Array0[j - 1][i]))
-			   - g * (h + b) * (1.0 / (2.0 * dy))
-			   * (SRC2(f1Array0[j + 1][i]) - SRC2(f1Array0[j - 1][i])));
+						  (1.0 / dy)
+						  * (SRC1(f1Array0[j + 1][i]) - SRC1(f1Array0[j - 1][i]))
+						  - g * (h + b) * (1.0 / (2.0 * dy))
+						  * (SRC2(f1Array0[j + 1][i]) - SRC2(f1Array0[j - 1][i])));
 						  
 	// find the time-averaged fluxes
 	Real3 F_tilde = flux_f + (dt / 2.0) * mul(dfdU, S_low - dfdx - dgdy);
@@ -340,8 +340,8 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// do the reconstruction
 	WENO3PlusX(f_plus_x_im1_j, f_plus_x_i_j, f_plus_x_ip1_j,
-		   f1Array0[j][i - 1], f1Array0[j][i], f1Array0[j][i + 1],
-		   f_iph_plus_x, s2_iph_plus_x);
+			   f1Array0[j][i - 1], f1Array0[j][i], f1Array0[j][i + 1],
+			   f_iph_plus_x, s2_iph_plus_x);
 
 	// do the flux splitting
 	Real3 f_minus_x_i_j   = 0.5 * (f3Array1[j][i]		- alpha_x * f3Array2[j][i]	  );
@@ -350,8 +350,8 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// do the reconstruction
 	WENO3MinusX(f_minus_x_i_j, f_minus_x_ip1_j, f_minus_x_ip2_j,
-		    f1Array0[j][i], f1Array0[j][i + 1], f1Array0[j][i + 2],
-		    f_iph_minus_x, s2_iph_minus_x);
+				f1Array0[j][i], f1Array0[j][i + 1], f1Array0[j][i + 2],
+				f_iph_minus_x, s2_iph_minus_x);
 
 	Real3 f_iph_x = f_iph_plus_x + f_iph_minus_x;
 	Real s2_iph_x = 0.5 * s2_iph_plus_x + 0.5 * s2_iph_minus_x;
@@ -380,8 +380,8 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// do the reconstruction
 	WENO3PlusY(f_plus_y_i_jm1, f_plus_y_i_j, f_plus_y_i_jp1,
-		   f1Array0[j - 1][i], f1Array0[j][i], f1Array0[j + 1][i],
-		   f_iph_plus_y, s2_iph_plus_y);
+			   f1Array0[j - 1][i], f1Array0[j][i], f1Array0[j + 1][i],
+			   f_iph_plus_y, s2_iph_plus_y);
 
 	// do the flux splitting
 	Real3 f_minus_y_i_j   = 0.5 * (f3Array0[j][i]		- alpha_y * f3Array2[j][i]	  );
@@ -390,8 +390,8 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// do the reconstruction
 	WENO3MinusY(f_minus_y_i_j, f_minus_y_i_jp1, f_minus_y_i_jp2,
-		    f1Array0[j][i], f1Array0[j + 1][i], f1Array0[j + 2][i],
-		    f_iph_minus_y, s2_iph_minus_y);
+				f1Array0[j][i], f1Array0[j + 1][i], f1Array0[j + 2][i],
+				f_iph_minus_y, s2_iph_minus_y);
 
 	Real3 f_iph_y = f_iph_plus_y + f_iph_minus_y;
 	Real s2_iph_y = 0.5 * s2_iph_plus_y + 0.5 * s2_iph_minus_y;
@@ -451,9 +451,9 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 	GroupMemoryBarrierWithGroupSync();
 
 	Real3 U_new = U_n - (dt / dx) * (finalFlux_x - f3Array1[j][i - 1]) - (dt / dy) * (finalFlux_y - f3Array2[j - 1][i])
-		      - g * (h + b) * Real3(0.0,
-					   (dt / dx) * (s2_iph_x - f1Array0[j][i - 1]),
-					   (dt / dy) * (s2_iph_y - f3Array0[j - 1][i].z));
+					   - g * (h + b) * Real3(0.0,
+											  (dt / dx) * (s2_iph_x - f1Array0[j][i - 1]),
+											  (dt / dy) * (s2_iph_y - f3Array0[j - 1][i].z));
 
 	
 	// find the velocities for the current cell
@@ -461,9 +461,9 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 	h4 *= h4;
 	// desingularize the velocities if needed
 	Real u_des = (U_new.x < desingularization_epsilon) ? sqrt(2.0) * U_new.x * U_new.y / sqrt((float)(h4 + max(h4, desingularization_epsilon)))
-							   : U_new.y / U_new.x;
+														: U_new.y / U_new.x;
 	Real v_des = (U_new.x < desingularization_epsilon) ? sqrt(2.0) * U_new.x * U_new.z / sqrt((float)(h4 + max(h4, desingularization_epsilon)))
-							   : U_new.z / U_new.x;
+														: U_new.z / U_new.x;
 
 	// consistency requirement
 	U_new.x = max(0.0, U_new.x);
