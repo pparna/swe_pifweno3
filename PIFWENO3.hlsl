@@ -340,8 +340,8 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// do the reconstruction
 	WENO3PlusX(f_plus_x_im1_j, f_plus_x_i_j, f_plus_x_ip1_j,
-			   f1Array0[j][i - 1], f1Array0[j][i], f1Array0[j][i + 1],
-			   f_iph_plus_x, s2_iph_plus_x);
+		   f1Array0[j][i - 1], f1Array0[j][i], f1Array0[j][i + 1],
+		   f_iph_plus_x, s2_iph_plus_x);
 
 	// do the flux splitting
 	Real3 f_minus_x_i_j   = 0.5 * (f3Array1[j][i]		- alpha_x * f3Array2[j][i]	  );
@@ -350,8 +350,8 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// do the reconstruction
 	WENO3MinusX(f_minus_x_i_j, f_minus_x_ip1_j, f_minus_x_ip2_j,
-				f1Array0[j][i], f1Array0[j][i + 1], f1Array0[j][i + 2],
-				f_iph_minus_x, s2_iph_minus_x);
+		    f1Array0[j][i], f1Array0[j][i + 1], f1Array0[j][i + 2],
+		    f_iph_minus_x, s2_iph_minus_x);
 
 	Real3 f_iph_x = f_iph_plus_x + f_iph_minus_x;
 	Real s2_iph_x = 0.5 * s2_iph_plus_x + 0.5 * s2_iph_minus_x;
@@ -380,8 +380,8 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// do the reconstruction
 	WENO3PlusY(f_plus_y_i_jm1, f_plus_y_i_j, f_plus_y_i_jp1,
-			   f1Array0[j - 1][i], f1Array0[j][i], f1Array0[j + 1][i],
-			   f_iph_plus_y, s2_iph_plus_y);
+		   f1Array0[j - 1][i], f1Array0[j][i], f1Array0[j + 1][i],
+		   f_iph_plus_y, s2_iph_plus_y);
 
 	// do the flux splitting
 	Real3 f_minus_y_i_j   = 0.5 * (f3Array0[j][i]		- alpha_y * f3Array2[j][i]	  );
@@ -390,8 +390,8 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// do the reconstruction
 	WENO3MinusY(f_minus_y_i_j, f_minus_y_i_jp1, f_minus_y_i_jp2,
-				f1Array0[j][i], f1Array0[j + 1][i], f1Array0[j + 2][i],
-				f_iph_minus_y, s2_iph_minus_y);
+		    f1Array0[j][i], f1Array0[j + 1][i], f1Array0[j + 2][i],
+		    f_iph_minus_y, s2_iph_minus_y);
 
 	Real3 f_iph_y = f_iph_plus_y + f_iph_minus_y;
 	Real s2_iph_y = 0.5 * s2_iph_plus_y + 0.5 * s2_iph_minus_y;
