@@ -49,9 +49,9 @@ groupshared Real3 f3Array1[THREADS_Y][THREADS_X];
 groupshared Real3 f3Array2[THREADS_Y][THREADS_X];
 
 void WENO3PlusX(Real3 v_im1, Real3 v_i, Real3 v_ip1,
-				Real3 s1_im1, Real3 s1_i, Real3 s1_ip1,
-				Real3 s2_im1, Real3 s2_i, Real3 s2_ip1,
-				out Real3 flux, out Real3 s1, out Real3 s2) {
+		Real3 s1_im1, Real3 s1_i, Real3 s1_ip1,
+		Real3 s2_im1, Real3 s2_i, Real3 s2_ip1,
+		out Real3 flux, out Real3 s1, out Real3 s2) {
 
 	// find the small stencil approximations
 	Real3 f0 = 0.5 * v_i + 0.5 * v_ip1;
@@ -86,9 +86,9 @@ void WENO3PlusX(Real3 v_im1, Real3 v_i, Real3 v_ip1,
 }
 
 void WENO3MinusX(Real3 v_i, Real3 v_ip1, Real3 v_ip2,
-				 Real3 s1_i, Real3 s1_ip1, Real3 s1_ip2,
-				 Real3 s2_i, Real3 s2_ip1, Real3 s2_ip2,
-				 out Real3 flux, out Real3 s1, out Real3 s2) {
+		 Real3 s1_i, Real3 s1_ip1, Real3 s1_ip2,
+		 Real3 s2_i, Real3 s2_ip1, Real3 s2_ip2,
+		 out Real3 flux, out Real3 s1, out Real3 s2) {
 
 	// find the small stencil approximations
 	Real3 f0 = 0.5 * v_ip1 + 0.5 * v_i;
@@ -123,9 +123,9 @@ void WENO3MinusX(Real3 v_i, Real3 v_ip1, Real3 v_ip2,
 }
 
 void WENO3PlusY(Real3 v_im1, Real3 v_i, Real3 v_ip1,
-				Real3 s1_im1, Real3 s1_i, Real3 s1_ip1,
-				Real3 s2_im1, Real3 s2_i, Real3 s2_ip1,
-				out Real3 flux, out Real3 s1, out Real3 s2) {
+		Real3 s1_im1, Real3 s1_i, Real3 s1_ip1,
+		Real3 s2_im1, Real3 s2_i, Real3 s2_ip1,
+		out Real3 flux, out Real3 s1, out Real3 s2) {
 
 	// find the small stencil approximations
 	Real3 f0 = 0.5 * v_i + 0.5 * v_ip1;
@@ -160,9 +160,9 @@ void WENO3PlusY(Real3 v_im1, Real3 v_i, Real3 v_ip1,
 }
 
 void WENO3MinusY(Real3 v_i, Real3 v_ip1, Real3 v_ip2,
-				 Real3 s1_i, Real3 s1_ip1, Real3 s1_ip2,
-				 Real3 s2_i, Real3 s2_ip1, Real3 s2_ip2,
-				 out Real3 flux, out Real3 s1, out Real3 s2) {
+		 Real3 s1_i, Real3 s1_ip1, Real3 s1_ip2,
+		 Real3 s2_i, Real3 s2_ip1, Real3 s2_ip2,
+		 out Real3 flux, out Real3 s1, out Real3 s2) {
 
 	// find the small stencil approximations
 	Real3 f0 = 0.5 * v_ip1 + 0.5 * v_i;
@@ -287,11 +287,11 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// evaluate the Jacobian matrices
 	Real3x3 dfdU = Real3x3(0.0, 1.0, 0.0,
-							-u * u + g * h, 2.0 * u, 0.0,
-							-u * v, v, u);
+				-u * u + g * h, 2.0 * u, 0.0,
+				-u * v, v, u);
 	Real3x3 dgdU = Real3x3(0.0, 0.0, 1.0,
-							-u * v, v, u,
-							-v * v + g * h, 0.0, 2.0 * v);
+				-u * v, v, u,
+				-v * v + g * h, 0.0, 2.0 * v);
 
 	// store flux_f in f3Array1
 	f3Array1[j][i] = flux_f;
@@ -310,15 +310,15 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// find the 2nd order source term
 	Real3 S_low = Real3(0.0,
-						  0.5 * g * (1.0 / (2.0 * dx))
-						  * (SRC1(f1Array0[j][i + 1]) - SRC1(f1Array0[j][i - 1]))
-						  - g * (h + b) * (1.0 / (2.0 * dx))
-						  * (SRC2(f1Array0[j][i + 1]) - SRC2(f1Array0[j][i - 1])),
+			    0.5 * g * (1.0 / (2.0 * dx))
+			    * (SRC1(f1Array0[j][i + 1]) - SRC1(f1Array0[j][i - 1]))
+			    - g * (h + b) * (1.0 / (2.0 * dx))
+			    * (SRC2(f1Array0[j][i + 1]) - SRC2(f1Array0[j][i - 1])),
 
-						  0.5 * g * (1.0 / (2.0 * dy))
-						  * (SRC1(f1Array0[j + 1][i]) - SRC1(f1Array0[j - 1][i]))
-						  - g * (h + b) * (1.0 / (2.0 * dy))
-						  * (SRC2(f1Array0[j + 1][i]) - SRC2(f1Array0[j - 1][i])));
+			    0.5 * g * (1.0 / (2.0 * dy))
+			    * (SRC1(f1Array0[j + 1][i]) - SRC1(f1Array0[j - 1][i]))
+			    - g * (h + b) * (1.0 / (2.0 * dy))
+			    * (SRC2(f1Array0[j + 1][i]) - SRC2(f1Array0[j - 1][i])));
 
 	// find the time-averaged fluxes
 	Real3 F_tilde = flux_f + (dt / 2.0) * mul(dfdU, S_low - dfdx - dgdy);
@@ -355,20 +355,20 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// find the left and right eigenvector matrices for the x-directional flux Jacobian
 	Real3x3 R_x = Real3x3(1.0, 0.0, 1.0,
-						  u_avg - c, 0.0, u_avg + c,
-						  v_avg, 1.0, v_avg);
+			      u_avg - c, 0.0, u_avg + c,
+			      v_avg, 1.0, v_avg);
 
 	Real3x3 L_x = Real3x3((u_avg + c) / (2.0 * c), -1.0 / (2.0 * c), 0.0,
-						  -v_avg, 0.0, 1.0,
-						  -(u_avg - c) / (2.0 * c), 1.0 / (2.0 * c), 0.0);
+			      -v_avg, 0.0, 1.0,
+			      -(u_avg - c) / (2.0 * c), 1.0 / (2.0 * c), 0.0);
 
 	R_x = (U_iph_j.x < REV_CONST) ? Real3x3(1.0, 0.0, 0.0,
-										    0.0, 1.0, 0.0,
-										    0.0, 0.0, 1.0) : R_x;
+					    	0.0, 1.0, 0.0,
+						0.0, 0.0, 1.0) : R_x;
 
 	L_x = (U_iph_j.x < REV_CONST) ? Real3x3(1.0, 0.0, 0.0,
-										    0.0, 1.0, 0.0,
-										    0.0, 0.0, 1.0) : L_x;
+						0.0, 1.0, 0.0,
+						0.0, 0.0, 1.0) : L_x;
 
 	// do the flux splitting
 	Real3 f_plus_x_im1_j = 0.5 * (mul(L_x, f3Array1[j][i - 1]) + alpha_x * mul(L_x, f3Array2[j][i - 1]));
@@ -390,9 +390,9 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// do the reconstruction
 	WENO3PlusX(f_plus_x_im1_j, f_plus_x_i_j, f_plus_x_ip1_j,
-			   s1_x_im1_j, s1_x_i_j, s1_x_ip1_j,
-			   s2_x_im1_j, s2_x_i_j, s2_x_ip1_j,
-			   f_iph_plus_x, s1_iph_plus_x, s2_iph_plus_x);
+		   s1_x_im1_j, s1_x_i_j, s1_x_ip1_j,
+		   s2_x_im1_j, s2_x_i_j, s2_x_ip1_j,
+		   f_iph_plus_x, s1_iph_plus_x, s2_iph_plus_x);
 
 	// do the flux splitting
 	Real3 f_minus_x_i_j   = 0.5 * (mul(L_x, f3Array1[j][i])	    - alpha_x * mul(L_x, f3Array2[j][i]    ));
@@ -401,9 +401,9 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// do the reconstruction
 	WENO3MinusX(f_minus_x_i_j, f_minus_x_ip1_j, f_minus_x_ip2_j,
-				s1_x_i_j, s1_x_ip1_j, s1_x_ip2_j,
-				s2_x_i_j, s2_x_ip1_j, s2_x_ip2_j,
-				f_iph_minus_x, s1_iph_minus_x, s2_iph_minus_x);
+		    s1_x_i_j, s1_x_ip1_j, s1_x_ip2_j,
+		    s2_x_i_j, s2_x_ip1_j, s2_x_ip2_j,
+		    f_iph_minus_x, s1_iph_minus_x, s2_iph_minus_x);
 
 	Real3 f_iph_x = mul(R_x, f_iph_plus_x + f_iph_minus_x);
 	Real s1_iph_x = mul(R_x, 0.5 * s1_iph_plus_x + 0.5 * s1_iph_minus_x).y;
@@ -430,20 +430,20 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// find the left and right eigenvector matrices for the y-directional flux Jacobian
 	Real3x3 R_y = Real3x3(1.0, 0.0, 1.0,
-						  u_avg, 1.0, u_avg,
-						  v_avg - c, 0.0, v_avg + c);
+			      u_avg, 1.0, u_avg,
+			      v_avg - c, 0.0, v_avg + c);
 
 	Real3x3 L_y = Real3x3((v_avg + c) / (2.0 * c), 0.0, -1.0 / (2.0 * c),
-						  -u_avg, 1.0, 0.0,
-						  -(v_avg - c) / (2.0 * c), 0.0, 1.0 / (2.0 * c));
+			      -u_avg, 1.0, 0.0,
+			      -(v_avg - c) / (2.0 * c), 0.0, 1.0 / (2.0 * c));
 
 	R_y = (U_i_jph.x < REV_CONST) ? Real3x3(1.0, 0.0, 0.0,
-										    0.0, 1.0, 0.0,
-										    0.0, 0.0, 1.0) : R_y;
+						0.0, 1.0, 0.0,
+						0.0, 0.0, 1.0) : R_y;
 
 	L_y = (U_i_jph.x < REV_CONST) ? Real3x3(1.0, 0.0, 0.0,
-										    0.0, 1.0, 0.0,
-										    0.0, 0.0, 1.0) : L_y;
+						0.0, 1.0, 0.0,
+						0.0, 0.0, 1.0) : L_y;
 
 	// do the flux splitting
 	Real3 f_plus_y_i_jm1 = 0.5 * (mul(L_y, f3Array0[j - 1][i]) + alpha_y * mul(L_y, f3Array2[j - 1][i]));
@@ -465,9 +465,9 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// do the reconstruction
 	WENO3PlusY(f_plus_y_i_jm1, f_plus_y_i_j, f_plus_y_i_jp1,
-			   s1_y_i_jm1, s1_y_i_j, s1_y_i_jp1,
-			   s2_y_i_jm1, s2_y_i_j, s2_y_i_jp1,
-			   f_iph_plus_y, s1_iph_plus_y, s2_iph_plus_y);
+		   s1_y_i_jm1, s1_y_i_j, s1_y_i_jp1,
+		   s2_y_i_jm1, s2_y_i_j, s2_y_i_jp1,
+		   f_iph_plus_y, s1_iph_plus_y, s2_iph_plus_y);
 
 	// do the flux splitting
 	Real3 f_minus_y_i_j   = 0.5 * (mul(L_y, f3Array0[j][i])	  - alpha_y * mul(L_y, f3Array2[j][i]));
@@ -476,9 +476,9 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 
 	// do the reconstruction
 	WENO3MinusY(f_minus_y_i_j, f_minus_y_i_jp1, f_minus_y_i_jp2,
-				s1_y_i_j, s1_y_i_jp1, s1_y_i_jp2,
-				s2_y_i_j, s2_y_i_jp1, s2_y_i_jp2,
-				f_iph_minus_y, s1_iph_minus_y, s2_iph_minus_y);
+		    s1_y_i_j, s1_y_i_jp1, s1_y_i_jp2,
+		    s2_y_i_j, s2_y_i_jp1, s2_y_i_jp2,
+		    f_iph_minus_y, s1_iph_minus_y, s2_iph_minus_y);
 
 	Real3 f_iph_y = mul(R_y, f_iph_plus_y + f_iph_minus_y);
 	Real s1_iph_y = mul(R_y, 0.5 * s1_iph_plus_y + 0.5 * s1_iph_minus_y).z;
@@ -543,21 +543,21 @@ void CSMain(uint3 groupID : SV_GroupID, uint3 threadID : SV_GroupThreadID) {
 	GroupMemoryBarrierWithGroupSync();
 
 	U_new += 0.5 * g * Real3(0.0,
-							   (dt / dx) * (s1_iph_x - f1Array0[j][i - 1]),
-							   (dt / dy) * (s1_iph_y - f3Array0[j - 1][i].x));
+				 (dt / dx) * (s1_iph_x - f1Array0[j][i - 1]),
+				 (dt / dy) * (s1_iph_y - f3Array0[j - 1][i].x));
 
 	U_new -= g * (h + b) * Real3(0.0,
-								  (dt / dx) * (s2_iph_x - f3Array0[j][i - 1].y),
-								  (dt / dy) * (s2_iph_y - f3Array0[j - 1][i].z));
+				     (dt / dx) * (s2_iph_x - f3Array0[j][i - 1].y),
+				     (dt / dy) * (s2_iph_y - f3Array0[j - 1][i].z));
 
 	// find the velocities for the current cell
 	Real h4 = U_new.x * U_new.x;
 	h4 *= h4;
 	// desingularize the velocities if needed
 	Real u_des = (U_new.x < desingularization_epsilon) ? sqrt(2.0) * U_new.x * U_new.y / sqrt((float)(h4 + max(h4, desingularization_epsilon)))
-														: U_new.y / U_new.x;
+							   : U_new.y / U_new.x;
 	Real v_des = (U_new.x < desingularization_epsilon) ? sqrt(2.0) * U_new.x * U_new.z / sqrt((float)(h4 + max(h4, desingularization_epsilon)))
-														: U_new.z / U_new.x;
+							   : U_new.z / U_new.x;
 
 	// consistency requirement
 	U_new.x = max(0.0, U_new.x);
