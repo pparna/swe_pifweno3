@@ -49,8 +49,8 @@ groupshared Real3 f3Array1[THREADS_Y][THREADS_X];
 groupshared Real3 f3Array2[THREADS_Y][THREADS_X];
 
 void WENO3PlusX(Real3 v_im1, Real3 v_i, Real3 v_ip1,
-				Real b_im1, Real b_i, Real b_ip1,
-				out Real3 flux, out Real s2) {
+		Real b_im1, Real b_i, Real b_ip1,
+		out Real3 flux, out Real s2) {
 
 	// find the smoothness indicators
 	Real3 b0 = (v_ip1 - v_i) * (v_ip1 - v_i);
